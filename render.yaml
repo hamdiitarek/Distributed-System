@@ -1,0 +1,60 @@
+services:
+  - name: nameservice
+    type: web
+    env: node
+    plan: free
+    buildCommand: cd packages/nameservice && npm install && npm run build
+    startCommand: cd packages/nameservice && npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+
+  - name: peer1
+    type: web
+    env: node
+    plan: free
+    buildCommand: cd packages/peer && npm install && npm run build
+    startCommand: cd packages/peer && npm start
+    envVars:
+      - key: PEER_ID
+        value: peer-1
+      - key: PORT
+        value: 4001
+      - key: NAME_SERVICE_URL
+        sync: false        # set in dashboard to https://nameservice.onrender.com
+      - key: PUBLIC_URL
+        sync: false        # set in dashboard to https://peer1.onrender.com
+
+  - name: peer2
+    type: web
+    env: node
+    plan: free
+    buildCommand: cd packages/peer && npm install && npm run build
+    startCommand: cd packages/peer && npm start
+    envVars:
+      - key: PEER_ID
+        value: peer-2
+      - key: PORT
+        value: 4002
+      - key: NAME_SERVICE_URL
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+
+  - name: peer3
+    type: web
+    env: node
+    plan: free
+    buildCommand: cd packages/peer && npm install && npm run build
+    startCommand: cd packages/peer && npm start
+    envVars:
+      - key: PEER_ID
+        value: peer-3
+      - key: PORT
+        value: 4003
+      - key: NAME_SERVICE_URL
+        sync: false
+      - key: PUBLIC_URL
+        sync: false

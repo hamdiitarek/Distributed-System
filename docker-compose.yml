@@ -1,0 +1,47 @@
+services:
+  # NameService and peers all advertise themselves as host.docker.internal
+  # so the same registered URL works from BOTH (a) the Next.js dev server
+  # running on the host Mac and (b) sibling peers inside other containers.
+  nameservice:
+    build: ./packages/nameservice
+    ports: ["3001:3001"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+
+  peer1:
+    build: ./packages/peer
+    ports: ["4001:4001"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    environment:
+      - PEER_ID=peer-1
+      - PORT=4001
+      - PUBLIC_URL=http://host.docker.internal:4001
+      - NAME_SERVICE_URL=http://host.docker.internal:3001
+      - NODE_ENV=development
+    depends_on: [nameservice]
+
+  peer2:
+    build: ./packages/peer
+    ports: ["4002:4002"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    environment:
+      - PEER_ID=peer-2
+      - PORT=4002
+      - PUBLIC_URL=http://host.docker.internal:4002
+      - NAME_SERVICE_URL=http://host.docker.internal:3001
+      - NODE_ENV=development
+    depends_on: [nameservice]
+
+  peer3:
+    build: ./packages/peer
+    ports: ["4003:4003"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    environment:
+      - PEER_ID=peer-3
+      - PORT=4003
+      - PUBLIC_URL=http://host.docker.internal:4003
+      - NAME_SERVICE_URL=http://host.docker.internal:3001
+      - NODE_ENV=development
+    depends_on: [nameservice]

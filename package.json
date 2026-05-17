@@ -1,0 +1,19 @@
+{
+  "name": "distributed-auction",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CSE463 Distributed Real-Time Auction System",
+  "workspaces": [
+    "packages/nameservice",
+    "packages/peer",
+    "packages/frontend"
+  ],
+  "scripts": {
+    "dev:ns": "npm --workspace packages/nameservice run dev",
+    "dev:peer1": "PEER_ID=peer-1 PORT=4001 npm --workspace packages/peer run dev",
+    "dev:peer2": "PEER_ID=peer-2 PORT=4002 npm --workspace packages/peer run dev",
+    "dev:peer3": "PEER_ID=peer-3 PORT=4003 npm --workspace packages/peer run dev",
+    "dev:web": "npm --workspace packages/frontend run dev",
+    "build": "npm --workspaces run build"
+  }
+}
