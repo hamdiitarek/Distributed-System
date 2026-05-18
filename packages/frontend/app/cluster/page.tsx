@@ -80,9 +80,15 @@ export default function ClusterPage() {
               e.kind !== "participant"
           );
           if (filtered.length > 0) {
-            setEvents((prev) => [...prev, ...filtered].slice(-200));
+            setEvents((prev) => {
+              const seen = new Set(prev.map((p) => p.id));
+              const fresh = filtered.filter((e: ClusterEvent) => !seen.has(e.id));
+              if (fresh.length === 0) return prev;
+              return [...prev, ...fresh].slice(-200);
+            });
           }
-          lastIdRef.current = j.events[j.events.length - 1].id;
+          const lastId = j.events[j.events.length - 1].id;
+          if (lastId > lastIdRef.current) lastIdRef.current = lastId;
         }
         setNow(Date.now());
       } catch (err: any) {
