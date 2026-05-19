@@ -1,4 +1,3 @@
-// File: routes/replicate.ts — receives replicated write ops from siblings
 import { Router } from "express";
 import { applyReplicatedOperation, ReplicationEnvelope } from "../replication";
 

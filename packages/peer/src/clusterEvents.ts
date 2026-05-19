@@ -1,6 +1,3 @@
-// Fire-and-forget event reporter for the public /cluster dashboard.
-// Failures are swallowed: the dashboard is observability, not a hard
-// dependency of the auction itself.
 import axios from "axios";
 import { peerRegistry } from "./peerRegistry";
 

@@ -1,37 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: replication.ts
-// Role: Active replication of write operations across all peers.
-// ═══════════════════════════════════════════════════════
-// DISTRIBUTED SYSTEMS CONCEPT: Active Replication
-// ═══════════════════════════════════════════════════════
-// Problem: A single primary replica is a single point of failure.
-//          Reads from "any peer" require every peer to agree.
-//
-// Solution: Active replication — every peer applies *every* write
-//          operation in the *same total order*. There is no primary;
-//          all replicas are equal and any replica can answer queries.
-//
-//   Ordering is established by Lamport timestamps with peerId as
-//   tiebreaker. Writes are guarded by Ricart–Agrawala for the
-//   "auction:<id>" resource so two concurrent writes cannot interleave.
-//
-// Consistency Model: Sequential consistency
-//   All peers see the same total order of operations. Operations from
-//   a single peer appear in program order. This is strictly weaker
-//   than linearizability (no real-time guarantee) but strong enough
-//   for an auction: every replica converges to the same winner.
-//
-// In this system: A bid placed at peer A:
-//   1. Acquire R-A mutex on "auction:<id>".
-//   2. Stamp bid with clock.tick() and originPeerId = A.
-//   3. POST /replicate/bid to every other peer (in parallel).
-//   4. Apply locally and emit Socket.IO updates.
-//   5. Release mutex.
-//
-// Trade-offs: O(n) network cost per write; not horizontally scalable
-//   beyond a handful of peers. For auctions, n≈3–7 is plenty.
-// ═══════════════════════════════════════════════════════
-
 import axios from "axios";
 import { clock, lamportCompare } from "./lamportClock";
 import { peerRegistry } from "./peerRegistry";

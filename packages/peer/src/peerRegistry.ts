@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: peerRegistry.ts
-// Role: Local cache of the active peer list pulled from the
-//       NameService. All inter-peer communication consults this list.
-// ═══════════════════════════════════════════════════════
 import axios from "axios";
 
 export interface RemotePeer {

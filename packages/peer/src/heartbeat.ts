@@ -1,15 +1,3 @@
-// Fire-and-forget heartbeat to the NameService. Called on a 2s timer
-// from index.ts, and also opportunistically after any state-changing
-// operation so /cluster reflects load and Lamport time without waiting
-// for the next periodic tick.
-//
-// Two recovery paths:
-//   1. shouldResync=true → peer was marked FAILED (manual crash). Other
-//      peers may have re-elected coordinators in our absence, so pull a
-//      fresh snapshot.
-//   2. HTTP 404 → NameService doesn't know us (e.g. NameService restarted
-//      and lost in-memory registry). Re-register immediately so /api/auctions
-//      can find an active peer.
 import axios from "axios";
 import { peerRegistry } from "./peerRegistry";
 import { clock } from "./lamportClock";

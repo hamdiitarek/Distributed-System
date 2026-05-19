@@ -1,36 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: lamportClock.ts
-// Role: Logical clock used by this peer to timestamp every event
-//       (bid, replication message, NameService interaction).
-// ═══════════════════════════════════════════════════════
-// DISTRIBUTED SYSTEMS CONCEPT: Lamport Logical Clocks
-// ═══════════════════════════════════════════════════════
-// Problem: Physical clocks on different machines drift; a bid placed
-//          "first" on peer A may arrive at peer B with a timestamp
-//          that appears later than a bid placed "second" on peer B.
-//          We need a way to establish a happens-before relation
-//          (→) across nodes without trusting wall-clock time.
-//
-// Solution: Each process maintains an integer clock L. Rules:
-//      (R1) Before any local event or send:  L ← L + 1
-//      (R2) On receiving a message tagged t: L ← max(L, t) + 1
-//          This guarantees: a → b  implies  L(a) < L(b)
-//
-// Total order: Two unrelated events can share an L value. To obtain
-//      a *total* order (needed by sequential consistency), we break
-//      ties using the peerId (lexicographic). Pair (L, peerId) is
-//      then a strict total order across the system.
-//
-// In this system: Every bid carries (lamportTime, peerId). All peers
-//      apply bids in this total order, so they converge on the same
-//      highest-bid winner regardless of network delay.
-//
-// Trade-offs: Lamport clocks capture happens-before but NOT causal
-//      independence — concurrent events cannot be detected. For
-//      auction ordering this is sufficient (we only need total order).
-//      Vector clocks would offer causality detection at higher cost.
-// ═══════════════════════════════════════════════════════
-
 export class LamportClock {
   private t = 0;
 

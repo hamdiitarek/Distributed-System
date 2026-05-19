@@ -9,7 +9,7 @@
 // browsers and avoids the impression that "different clients see
 // different peers" implies divergent state.
 import { NextRequest, NextResponse } from "next/server";
-import { localizePeerUrl } from "../_peer-url";
+import { localizePeerUrl, publicPeerUrl } from "../_peer-url";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +25,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "no peers" }, { status: 503 });
     }
 
-    // If we know the auction, route to its coordinator so every viewer
-    // streams from the same peer.
+    // When PUBLIC_PEER_BASE_URL is set (port-forwarding / devtunnel), only one
+    // peer port is reachable from outside. Pin the browser to that specific peer
+    // so we don't hand out an unreachable URL. State is fully replicated so any
+    // peer can serve live updates.
+    // PEER_TUNNEL_PORT tells us which local port the tunnel forwards to (e.g. 4001).
+    if (process.env.PUBLIC_PEER_BASE_URL) {
+      const tunnelPort = process.env.PEER_TUNNEL_PORT ?? "4001";
+      const pinned = peers.find((p) => {
+        try { return new URL(p.url).port === tunnelPort; } catch { return false; }
+      });
+      const target = pinned ?? peers[0];
+      return NextResponse.json({
+        peerId: target.peerId,
+        url: publicPeerUrl(target.url),
+        replicaCount: peers.length,
+      });
+    }
+
+    // Local dev: route to the auction's coordinator peer for consistency.
     if (auctionId) {
-      // Ask any peer for the auction; the response includes coordinatorPeerId.
       const probe = peers[0];
       try {
         const ar = await fetch(
@@ -42,7 +58,7 @@ export async function GET(req: NextRequest) {
           if (coord) {
             return NextResponse.json({
               peerId: coord.peerId,
-              url: localizePeerUrl(coord.url),
+              url: publicPeerUrl(coord.url),
               replicaCount: peers.length,
             });
           }
@@ -52,11 +68,11 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Fallback: random peer (used for any non-auction-bound page).
+    // Fallback: random peer.
     const peer = peers[Math.floor(Math.random() * peers.length)];
     return NextResponse.json({
       peerId: peer.peerId,
-      url: localizePeerUrl(peer.url),
+      url: publicPeerUrl(peer.url),
       replicaCount: peers.length,
     });
   } catch (err: any) {

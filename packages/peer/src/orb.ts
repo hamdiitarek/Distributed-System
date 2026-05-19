@@ -16,7 +16,6 @@
 //   • Injects a Lamport timestamp + originPeerId into every call,
 //     so receivers can merge logical clocks (R2) and replicate.
 //   • Retries failed requests with exponential back-off (3 attempts).
-//   • On final failure, asks the NameService for a failover peer.
 //
 // In this system: Used by (a) the Next.js API proxy via orb-client.ts
 //   to dispatch user actions to a peer, and (b) inter-peer calls

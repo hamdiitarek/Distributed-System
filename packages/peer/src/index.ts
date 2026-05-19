@@ -1,12 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: peer/index.ts
-// Role: Boot a single peer process.
-//   1. Start Express + Socket.IO.
-//   2. Register with the NameService.
-//   3. Sync state from any existing peer.
-//   4. Begin heartbeats + periodic peer-list refresh.
-//   5. Handle graceful shutdown.
-// ═══════════════════════════════════════════════════════
 import express from "express";
 import http from "http";
 import cors from "cors";

@@ -1,33 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: auctionCoordinator.ts
-// Role: Manages the lifecycle of an auction (PENDING → ACTIVE → ENDED)
-//       and handles coordinator re-election on peer failure.
-// ═══════════════════════════════════════════════════════
-// DISTRIBUTED SYSTEMS CONCEPT: Coordinator Election + Lifecycle
-// ═══════════════════════════════════════════════════════
-// Problem: One peer must drive the timer and decide auction transitions.
-//          If that peer dies mid-auction the system must elect a new
-//          one — deterministically, so no two replicas disagree.
-//
-// Solution:
-//   • Initial coordinator = the peer assigned by NameService on
-//     auction creation (least-loaded).
-//   • On peer failure: every surviving peer applies the same rule —
-//     "the surviving peer with the lowest peerId (lex) takes over
-//     for each auction whose coordinator was the failed peer."
-//     Because all peers see the same failure notification and use the
-//     same deterministic rule, they all elect the same new coordinator
-//     without exchanging extra messages.
-//
-// In this system: Only the coordinator ticks the timer and broadcasts
-//   "timer" replication ops. Bid acceptance happens on *any* peer, but
-//   status transitions go through Ricart–Agrawala plus replication.
-//
-// Trade-offs: Lowest-id election is simple but unfair under repeated
-//   failures (peer-1 keeps getting work). For an auction app this is
-//   fine; production systems would use Raft/ZAB for stronger semantics.
-// ═══════════════════════════════════════════════════════
-
 import { Server as IOServer } from "socket.io";
 import { clock } from "./lamportClock";
 import { peerRegistry } from "./peerRegistry";

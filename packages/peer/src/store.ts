@@ -1,10 +1,3 @@
-// ═══════════════════════════════════════════════════════
-// File: store.ts
-// Role: In-memory replicated auction state. Every peer holds an
-//       identical copy — this is the data plane that active
-//       replication keeps in sync.
-// ═══════════════════════════════════════════════════════
-
 export type AuctionStatus = "PENDING" | "ACTIVE" | "ENDED";
 
 export interface Bid {
